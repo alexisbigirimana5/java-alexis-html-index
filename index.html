@@ -15,7 +15,9 @@
     <script type="text/babel">
         const { useState } = React;
 
-        // Lucide Icons as inline SVGs
+        // =======================================================
+        // 1. Lucide Icons as inline SVGs (for a cleaner look)
+        // =======================================================
         const ShoppingCart = ({className}) => (
             <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -57,30 +59,19 @@
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
             </svg>
         );
-
-        const LogOut = ({className}) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-        );
-
-        const ChevronDown = ({className}) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-            </svg>
-        );
-
-        const ChevronUp = ({className}) => (
-            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-            </svg>
-        );
-
+        
         const Plus = ({className}) => (
             <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
         );
+
+        const Minus = ({className}) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+            </svg>
+        );
+
 
         const BrawleyApp = () => {
             const [step, setStep] = useState(1);
@@ -88,11 +79,14 @@
             const [password, setPassword] = useState('');
             const [newPassword, setNewPassword] = useState('');
             const [confirmPassword, setConfirmPassword] = useState('');
-            const [changedPassword, setChangedPassword] = useState('');
             const [cart, setCart] = useState({});
             const [phoneNumber, setPhoneNumber] = useState('');
             const [telecom, setTelecom] = useState('MTN');
             const [selectedCompany, setSelectedCompany] = useState(null);
+            
+            // State for the dynamically changed password
+            const [simulatedPassword, setSimulatedPassword] = useState('demo123');
+            const INITIAL_USER = 'Pk';
 
             const handleGoBack = () => {
                 if (step === 3) {
@@ -100,20 +94,24 @@
                 } else if (step === 4) {
                     setStep(3);
                     setCart({});
+                } else if (step === 5) {
+                    setStep(4);
                 }
             };
 
+            // 🌟 LOGOUT FUNCTIONALITY 🌟
+            // Resets all necessary states and forces the view back to Step 1 (Login)
             const handleLogout = () => {
-                setStep(1);
-                setUserId('');
-                setPassword('');
+                setStep(1); // Redirects user to the login page
+                setUserId(''); // Clears input fields
+                setPassword(''); // Clears input fields
                 setCart({});
-                setPhoneNumber('');
                 setSelectedCompany(null);
+                setPhoneNumber('');
+                setNewPassword('');
+                setConfirmPassword('');
+                alert('You have successfully logged out. Please re-login with your current credentials.');
             };
-
-            const DEFAULT_USER = 'Pk';
-            const DEFAULT_PASSWORD = 'demo123';
 
             const companies = [
                 {
@@ -122,70 +120,57 @@
                     logo: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 400 250%22%3E%3Cellipse cx=%22200%22 cy=%22125%22 rx=%22180%22 ry=%22110%22 fill=%221e3a8a%22 stroke=%22fbbf24%22 stroke-width=%228%22/%3E%3Cellipse cx=%22200%22 cy=%2280%22 rx=%2240%22 ry=%2245%22 fill=%22dc2626%22/%3E%3Ccircle cx=%22200%22 cy=%2265%22 r=%2220%22 fill=%22fcd34d%22/%3E%3Cpolygon points=%22170,80 180,95 190,80 200,95 210,80 220,95 230,80%22 fill=%22white%22/%3E%3Ctext x=%22200%22 y=%22130%22 font-size=%2248%22 font-family=%22cursive%22 font-weight=%22bold%22 fill=%22white%22 text-anchor=%22middle%22%3EChibuku%3C/text%3E%3Cpath d=%22M 100 140 Q 200 160 300 140%22 fill=%22dc2626%22/%3E%3Ctext x=%22200%22 y=%22165%22 font-size=%2220%22 font-family=%22arial%22 fill=%22white%22 text-anchor=%22middle%22 font-style=%22italic%22%3ETaste the goodness%3C/text%3E%3C/svg%3E',
                     description: 'Premium beverage products',
                     bgColor: 'from-gray-900 to-gray-800',
-                    isImage: true,
-                    products: [
-                        { id: 1, name: 'Chibuku Super', types: ['Bottle', 'Crate', 'Container'] },
-                        { id: 2, name: 'Chibuku Original', types: ['Bottle', 'Crate'] },
-                        { id: 3, name: 'Chibuku Shake Shake', types: ['Bottle', 'Container'] },
-                        { id: 4, name: 'Chibuku Premium', types: ['Bottle', 'Crate', 'Container'] }
-                    ]
+                    isImage: true
                 },
                 {
                     id: 2,
                     name: 'Brawley Waters',
                     logo: '💧',
                     description: 'Pure water solutions',
-                    bgColor: 'from-cyan-500 to-blue-600',
-                    products: [
-                        { id: 5, name: 'Brawley Premium Water', types: ['Bottle', 'Crate', 'Container'] },
-                        { id: 6, name: 'Brawley Sparkling', types: ['Bottle', 'Crate'] },
-                        { id: 7, name: 'Brawley Natural Spring', types: ['Bottle', 'Container'] },
-                        { id: 8, name: 'Brawley Mineral Plus', types: ['Bottle', 'Crate', 'Container'] },
-                        { id: 9, name: 'Brawley Alkaline', types: ['Bottle', 'Crate'] },
-                        { id: 10, name: 'Brawley Kids Pack', types: ['Bottle', 'Crate'] },
-                        { id: 11, name: 'Brawley Energy Blend', types: ['Bottle', 'Container'] }
-                    ]
+                    bgColor: 'from-cyan-500 to-blue-600'
                 },
                 {
                     id: 3,
                     name: 'Coca-Cola',
                     logo: '🥤',
                     description: 'Soft drinks & beverages',
-                    bgColor: 'from-red-600 to-red-800',
-                    products: [
-                        { id: 12, name: 'Coca-Cola Classic', types: ['Bottle', 'Crate', 'Container'] },
-                        { id: 13, name: 'Coca-Cola Zero', types: ['Bottle', 'Crate'] },
-                        { id: 14, name: 'Diet Coke', types: ['Bottle', 'Crate'] },
-                        { id: 15, name: 'Fanta Orange', types: ['Bottle', 'Crate', 'Container'] }
-                    ]
+                    bgColor: 'from-red-600 to-red-800'
                 },
                 {
                     id: 4,
                     name: 'Sprite',
                     logo: '🌟',
                     description: 'Refreshing citrus drinks',
-                    bgColor: 'from-green-500 to-green-700',
-                    products: [
-                        { id: 16, name: 'Sprite Regular', types: ['Bottle', 'Crate', 'Container'] },
-                        { id: 17, name: 'Sprite Zero', types: ['Bottle', 'Crate'] },
-                        { id: 18, name: 'Sprite Lemon', types: ['Bottle', 'Container'] }
-                    ]
+                    bgColor: 'from-green-500 to-green-700'
                 }
             ];
 
+            const products = [
+                { id: 1, name: 'Brawley Premium Water', types: ['Bottle', 'Crate', 'Container'] },
+                { id: 2, name: 'Brawley Sparkling', types: ['Bottle', 'Crate'] },
+                { id: 3, name: 'Brawley Natural Spring', types: ['Bottle', 'Container'] },
+                { id: 4, name: 'Brawley Mineral Plus', types: ['Bottle', 'Crate', 'Container'] },
+                { id: 5, name: 'Brawley Alkaline', types: ['Bottle', 'Crate'] },
+                { id: 6, name: 'Brawley Kids Pack', types: ['Bottle', 'Crate'] },
+                { id: 7, name: 'Brawley Energy Blend', types: ['Bottle', 'Container'] }
+            ];
+
             const handleLogin = () => {
-                if (userId.toLowerCase() === DEFAULT_USER.toLowerCase() && password === DEFAULT_PASSWORD) {
-                    setStep(2);
-                } else if (userId.toLowerCase() === DEFAULT_USER.toLowerCase() && changedPassword && password === changedPassword) {
-                    setStep(3);
+                if (userId === INITIAL_USER && password === simulatedPassword) {
+                    // Check if it's the very first login with default password
+                    if (simulatedPassword === 'demo123') {
+                        setStep(2); // Go to password change
+                    } else {
+                        setStep(3); // Go to company selection
+                    }
                 } else {
-                    alert('Invalid credentials! Use ID: Pk, Password: demo123');
+                    alert(`Invalid credentials! Use ID: ${INITIAL_USER}, Password: ${simulatedPassword} (or demo123 if first login)`);
                 }
             };
 
             const handlePasswordChange = () => {
                 if (newPassword && newPassword === confirmPassword && newPassword.length >= 6) {
-                    setChangedPassword(newPassword);
+                    setSimulatedPassword(newPassword); // Update the password for next login
                     setStep(3);
                 } else {
                     alert('Passwords must match and be at least 6 characters!');
@@ -199,7 +184,7 @@
 
             const addToCart = (productId, type, quantity) => {
                 if (quantity > 0) {
-                    setCart({...cart, [`${productId}-${type}`]: { productId, type, quantity }});
+                    setCart(prevCart => ({...prevCart, [`${productId}-${type}`]: { productId, type, quantity }}));
                 }
             };
 
@@ -218,11 +203,87 @@
             const handlePayment = () => {
                 if (phoneNumber && phoneNumber.length >= 10) {
                     setStep(6);
+                    // Simulate payment confirmation delay
                     setTimeout(() => setStep(7), 2000);
                 } else {
                     alert('Please enter a valid phone number!');
                 }
             };
+            
+            // =======================================================
+            // ProductCard Component
+            // =======================================================
+            const ProductCard = ({ product, addToCart }) => {
+                const [selectedType, setSelectedType] = useState(product.types[0]);
+                const [quantity, setQuantity] = useState(0);
+                const [isOpen, setIsOpen] = useState(false); // State for toggle
+
+                const handleAdd = () => {
+                    if (quantity > 0) {
+                        addToCart(product.id, selectedType, quantity);
+                        alert(`Added ${quantity} ${selectedType}(s) of ${product.name} to cart!`);
+                        setQuantity(0);
+                        setIsOpen(false); // Close after adding
+                    }
+                };
+
+                return (
+                    <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition">
+                        <div 
+                            className="flex justify-between items-center cursor-pointer mb-4"
+                            onClick={() => setIsOpen(!isOpen)} // Toggle visibility
+                        >
+                            <h3 className="text-xl font-bold text-gray-800">{product.name}</h3>
+                            {isOpen ? (
+                                <Minus className="w-6 h-6 text-blue-600" />
+                            ) : (
+                                <Plus className="w-6 h-6 text-blue-600" />
+                            )}
+                        </div>
+                        
+                        {/* Toggled Content */}
+                        {isOpen && (
+                            <div className="space-y-3 pt-2 border-t border-gray-100">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                                    <select
+                                        value={selectedType}
+                                        onChange={(e) => setSelectedType(e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    >
+                                        {product.types.map((type) => (
+                                            <option key={type} value={type}>{type}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={quantity}
+                                        onChange={(e) => setQuantity(parseInt(e.target.value) || 0)}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="0"
+                                    />
+                                </div>
+                                
+                                <button
+                                    onClick={handleAdd}
+                                    className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+                                >
+                                    Add to Cart
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+            // =======================================================
+            // End ProductCard Component
+            // =======================================================
+
 
             if (step === 1) {
                 return (
@@ -274,8 +335,8 @@
                                 
                                 <div className="text-center text-sm text-gray-500 mt-4">
                                     <p>Demo Credentials:</p>
-                                    <p>ID: <span className="font-mono font-semibold">Pk</span></p>
-                                    <p>Password: <span className="font-mono font-semibold">demo123</span></p>
+                                    <p>ID: <span className="font-mono font-semibold">{INITIAL_USER}</span></p>
+                                    <p>Password: <span className="font-mono font-semibold">{simulatedPassword}</span></p>
                                 </div>
                             </div>
                         </div>
@@ -336,17 +397,16 @@
                         <div className="max-w-4xl mx-auto">
                             <div className="flex justify-between items-center mb-8">
                                 <button
-                                    onClick={handleLogout}
-                                    className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition"
+                                    onClick={() => setStep(1)} // Go back to login/password check
+                                    className="bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-700 transition"
                                 >
-                                    <LogOut className="w-5 h-5" />
-                                    Logout
+                                    ← Back to Login
                                 </button>
                                 <div className="text-center flex-1">
                                     <h2 className="text-3xl font-bold text-gray-800">Select a Company</h2>
                                     <p className="text-gray-600 mt-2">Choose a selling company to browse products</p>
                                 </div>
-                                <div className="w-28"></div>
+                                <div className="w-32"></div> {/* Spacer for alignment */}
                             </div>
 
                             <div className="grid md:grid-cols-2 gap-6">
@@ -382,26 +442,27 @@
                 return (
                     <div className="min-h-screen bg-gray-50 p-4">
                         <div className="max-w-6xl mx-auto">
+                            {/* Header, Back Button, and LOGOUT Button */}
                             <div className="flex justify-between items-center mb-6">
                                 <button
                                     onClick={handleGoBack}
                                     className="bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-700 transition"
                                 >
-                                    ← Back
+                                    ← Back to Companies
                                 </button>
+                                {/* 🌟 LOGOUT BUTTON 🌟 */}
                                 <button
                                     onClick={handleLogout}
-                                    className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-700 transition"
+                                    className="bg-red-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-600 transition flex items-center"
                                 >
-                                    <LogOut className="w-5 h-5" />
-                                    Logout
+                                    <User className="w-5 h-5 mr-2" /> Logout
                                 </button>
                             </div>
-                            
+
                             <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
                                 <div className="flex justify-between items-center">
                                     <div>
-                                        <h2 className="text-3xl font-bold text-gray-800">{selectedCompany.name}</h2>
+                                        <h2 className="text-3xl font-bold text-gray-800">{selectedCompany.name} Products</h2>
                                         <p className="text-gray-600 mt-1">Select your items</p>
                                     </div>
                                     <div className="flex items-center gap-2 bg-blue-100 px-4 py-2 rounded-lg">
@@ -411,9 +472,9 @@
                                 </div>
                             </div>
                             
-                            <div className="space-y-4 mb-6">
-                                {selectedCompany.products.map((product) => (
-                                    <CollapsibleProductCard key={product.id} product={product} addToCart={addToCart} />
+                            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                                {products.map((product) => (
+                                    <ProductCard key={product.id} product={product} addToCart={addToCart} />
                                 ))}
                             </div>
                             
@@ -434,6 +495,12 @@
                 return (
                     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
                         <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
+                            <button
+                                onClick={handleGoBack}
+                                className="mb-6 bg-gray-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-gray-700 transition"
+                            >
+                                ← Back to Cart
+                            </button>
                             <div className="text-center mb-8">
                                 <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <Phone className="w-8 h-8 text-purple-600" />
@@ -512,16 +579,18 @@
                                 <p className="text-sm text-gray-600 mt-2">Payment via {telecom}</p>
                             </div>
                             
+                            {/* Option to start a new order or logout */}
                             <button
-                                onClick={() => {
-                                    setStep(3);
-                                    setCart({});
-                                    setPhoneNumber('');
-                                    setSelectedCompany(null);
-                                }}
-                                className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition"
+                                onClick={handleLogout}
+                                className="w-full bg-red-500 text-white py-3 rounded-lg font-semibold hover:bg-red-600 transition"
                             >
-                                Place Another Order
+                                Finish & Logout
+                            </button>
+                            <button
+                                onClick={() => { setStep(3); setCart({}); }}
+                                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition mt-3"
+                            >
+                                New Order
                             </button>
                         </div>
                     </div>
@@ -529,4 +598,8 @@
             }
         };
 
-        const Coll
+        // Render the main component
+        ReactDOM.render(<BrawleyApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
