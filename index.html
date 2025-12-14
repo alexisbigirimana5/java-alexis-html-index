@@ -61,6 +61,27 @@
             justify-content: center;
             height: 100%;
         }
+        
+        /* Hide number input spinners */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        
+        /* Price styling */
+        .price-tag {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            font-weight: bold;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            display: inline-block;
+        }
     </style>
 </head>
 <body class="bg-blue-white">
@@ -143,26 +164,65 @@
             'CHIBUKI logo': './images/chibuku-logo.png',
             
             // Product images
-            'Chibuku Chocolate Maheu': './images/chocolate-maheu.jpg',
-            'Chibuku Shake Shake Carton': './images/shake-shake.jpg',
-            'Chibuku Special': './images/chibuku-special.jpg',
+            'Maheu - Chocolate': './images/chocolate-maheu.jpg',
+            'Maheu - Strawberry': './images/strawberry-maheu.jpg',
+            'Maheu - Vanilla and Milk': './images/vanilla-milk-maheu.jpg',
+            'Super Maheu - Chocolate and Milk': './images/super-maheu.jpg',
             'Chibuku Super Giant': './images/super-giant.jpg',
-            'Chibuku strawberry maheu': './images/strawberry-maheu.jpg',
-            'Chibuku Vanilla and Milk Maheu': './images/vanilla-milk-maheu.jpg',
-            'Chibuku Super Maheu, milk and chocolate': './images/super-maheu.jpg',
+            'Chibuku Special': './images/chibuku-special.jpg',
+            'Chibuku Shake Shake Carton': './images/shake-shake.jpg',
         };
         
         // Fallback images (Unsplash) in case local images aren't found
         const fallbackImages = {
             'CHIBUKI logo': 'https://images.unsplash.com/photo-1567446537710-0e9b8d4d8c4d?w=400&h=200&fit=crop&crop=center',
             
-            'Chibuku Chocolate Maheu': 'https://images.unsplash.com/photo-1570913199992-91d07c140e7a?w=400&h=400&fit=crop&crop=center',
-            'Chibuku Shake Shake Carton': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop&crop=center',
-            'Chibuku Special': 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop&crop=center',
+            'Maheu - Chocolate': 'https://images.unsplash.com/photo-1570913199992-91d07c140e7a?w=400&h=400&fit=crop&crop=center',
+            'Maheu - Strawberry': 'https://images.unsplash.com/photo-1586201375761-83865001e311?w=400&h=400&fit=crop&crop=center',
+            'Maheu - Vanilla and Milk': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop&crop=center',
+            'Super Maheu - Chocolate and Milk': 'https://images.unsplash.com/photo-1570913199992-91d07c140e7a?w=400&h=400&fit=crop&crop=center',
             'Chibuku Super Giant': 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=400&fit=crop&crop=center',
-            'Chibuku strawberry maheu': 'https://images.unsplash.com/photo-1586201375761-83865001e311?w=400&h=400&fit=crop&crop=center',
-            'Chibuku Vanilla and Milk Maheu': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop&crop=center',
-            'Chibuku Super Maheu, milk and chocolate': 'https://images.unsplash.com/photo-1570913199992-91d07c140e7a?w=400&h=400&fit=crop&crop=center',
+            'Chibuku Special': 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop&crop=center',
+            'Chibuku Shake Shake Carton': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop&crop=center',
+        };
+
+        // Product price data in Malawian Kwacha
+        const productPrices = {
+            'Maheu - Chocolate': {
+                price: '20,000',
+                crateSize: '20',
+                currency: 'MWK'
+            },
+            'Maheu - Vanilla and Milk': {
+                price: '20,000',
+                crateSize: '20',
+                currency: 'MWK'
+            },
+            'Maheu - Strawberry': {
+                price: '20,000',
+                crateSize: '20',
+                currency: 'MWK'
+            },
+            'Super Maheu - Chocolate and Milk': {
+                price: '30,000',
+                crateSize: '20',
+                currency: 'MWK'
+            },
+            'Chibuku Super Giant': {
+                price: '36,000',
+                crateSize: '12',
+                currency: 'MWK'
+            },
+            'Chibuku Special': {
+                price: '48,000',
+                crateSize: '24',
+                currency: 'MWK'
+            },
+            'Chibuku Shake Shake Carton': {
+                price: '40,000',
+                crateSize: '20',
+                currency: 'MWK'
+            }
         };
 
         const BrawleyApp = () => {
@@ -186,7 +246,7 @@
             // State for the package selection in Step 4
             const [selectedPackage, setSelectedPackage] = useState('');
             // State for quantity
-            const [quantity, setQuantity] = useState(0);
+            const [quantity, setQuantity] = useState('');
             // State for the inline notification
             const [notification, setNotification] = useState(null);
             // State for image loading errors
@@ -201,7 +261,7 @@
                     setCart({});
                     setSelectedProductId('');
                     setSelectedPackage('');
-                    setQuantity(0);
+                    setQuantity('');
                 } else if (step === 5) {
                     // Step 5 is the cart review
                     setStep(4);
@@ -222,7 +282,7 @@
                 setConfirmPassword('');
                 setSelectedProductId('');
                 setSelectedPackage('');
-                setQuantity(0);
+                setQuantity('');
                 setNotification(null);
                 setImageErrors({});
                 alert('You have successfully logged out. Please re-login with your current credentials.');
@@ -241,15 +301,57 @@
                 },
             ];
             
-            // Product List with local image paths
+            // Product List with local image paths and prices
             const chibukuProducts = [
-                { id: '1', name: 'Chibuku Chocolate Maheu', imgKey: 'Chibuku Chocolate Maheu', packageOptions: ['250ml Carton (Case of 24)', '500ml Carton (Case of 12)'] },
-                { id: '2', name: 'Chibuku Vanilla and Milk Maheu', imgKey: 'Chibuku Vanilla and Milk Maheu', packageOptions: ['250ml Carton (Case of 24)', '500ml Carton (Case of 12)'] },
-                { id: '3', name: 'Chibuku strawberry maheu', imgKey: 'Chibuku strawberry maheu', packageOptions: ['250ml Carton (Case of 24)', '500ml Carton (Case of 12)'] },
-                { id: '4', name: 'Chibuku Super Maheu, milk and chocolate', imgKey: 'Chibuku Super Maheu, milk and chocolate', packageOptions: ['1L Bottle (Case of 6)', '250ml Carton (Case of 24)'] },
-                { id: '5', name: 'Chibuku Super Giant', imgKey: 'Chibuku Super Giant', packageOptions: ['2L Plastic Bottle (Crate of 6)', '1L Plastic Bottle (Crate of 12)'] },
-                { id: '6', name: 'Chibuku Special', imgKey: 'Chibuku Special', packageOptions: ['500ml Glass Bottle (Crate of 24)'] },
-                { id: '7', name: 'Chibuku Shake Shake Carton', imgKey: 'Chibuku Shake Shake Carton', packageOptions: ['1L Carton (Case of 12)'] },
+                { 
+                    id: '1', 
+                    name: 'Maheu - Chocolate', 
+                    imgKey: 'Maheu - Chocolate', 
+                    packageOptions: ['250ml Carton (Case of 24)', '500ml Carton (Case of 12)'],
+                    price: productPrices['Maheu - Chocolate']
+                },
+                { 
+                    id: '2', 
+                    name: 'Maheu - Vanilla and Milk', 
+                    imgKey: 'Maheu - Vanilla and Milk', 
+                    packageOptions: ['250ml Carton (Case of 24)', '500ml Carton (Case of 12)'],
+                    price: productPrices['Maheu - Vanilla and Milk']
+                },
+                { 
+                    id: '3', 
+                    name: 'Maheu - Strawberry', 
+                    imgKey: 'Maheu - Strawberry', 
+                    packageOptions: ['250ml Carton (Case of 24)', '500ml Carton (Case of 12)'],
+                    price: productPrices['Maheu - Strawberry']
+                },
+                { 
+                    id: '4', 
+                    name: 'Super Maheu - Chocolate and Milk', 
+                    imgKey: 'Super Maheu - Chocolate and Milk', 
+                    packageOptions: ['1L Bottle (Case of 6)', '250ml Carton (Case of 24)'],
+                    price: productPrices['Super Maheu - Chocolate and Milk']
+                },
+                { 
+                    id: '5', 
+                    name: 'Chibuku Super Giant', 
+                    imgKey: 'Chibuku Super Giant', 
+                    packageOptions: ['2L Plastic Bottle (Crate of 6)', '1L Plastic Bottle (Crate of 12)'],
+                    price: productPrices['Chibuku Super Giant']
+                },
+                { 
+                    id: '6', 
+                    name: 'Chibuku Special', 
+                    imgKey: 'Chibuku Special', 
+                    packageOptions: ['500ml Glass Bottle (Crate of 24)'],
+                    price: productPrices['Chibuku Special']
+                },
+                { 
+                    id: '7', 
+                    name: 'Chibuku Shake Shake Carton', 
+                    imgKey: 'Chibuku Shake Shake Carton', 
+                    packageOptions: ['1L Carton (Case of 12)'],
+                    price: productPrices['Chibuku Shake Shake Carton']
+                },
             ];
             
             const products = useMemo(() => {
@@ -280,7 +382,7 @@
                 setSelectedProductId(productId);
                 
                 // Reset package, quantity, and notification when product changes
-                setQuantity(0);
+                setQuantity('');
                 setNotification(null);
                 
                 // Automatically select the first package option of the new product
@@ -294,8 +396,18 @@
             
             const handlePackageChange = (e) => {
                 setSelectedPackage(e.target.value);
-                setQuantity(0); // Reset quantity upon package change
+                setQuantity(''); // Reset quantity upon package change
                 setNotification(null);
+            };
+
+            // Handle quantity input - only allow whole numbers
+            const handleQuantityChange = (e) => {
+                const value = e.target.value;
+                
+                // Only allow numbers and empty string
+                if (value === '' || /^[0-9]+$/.test(value)) {
+                    setQuantity(value);
+                }
             };
 
             const handleLogin = () => {
@@ -327,25 +439,33 @@
 
             // Cart key: 'productID-packageOptionName'
             const handleAddToCart = () => {
-                if (quantity > 0 && selectedProductId && selectedPackage) {
+                const qty = parseInt(quantity) || 0;
+                
+                if (qty > 0 && selectedProductId && selectedPackage) {
                     const cartKey = `${selectedProductId}-${selectedPackage.replace(/\s/g, '-')}`;
                     
                     setCart(prevCart => {
                         const existingItem = prevCart[cartKey];
-                        const newQuantity = existingItem ? existingItem.quantity + quantity : quantity;
+                        const newQuantity = existingItem ? existingItem.quantity + qty : qty;
+                        
+                        // Calculate price for this item
+                        const itemPrice = currentProduct.price ? parseInt(currentProduct.price.price.replace(/,/g, '')) : 0;
+                        const totalPrice = itemPrice * newQuantity;
                         
                         // New item object for the cart
                         const newItem = { 
                             productId: selectedProductId, 
                             productName: currentProduct.name,
                             packageOption: selectedPackage, 
-                            quantity: newQuantity 
+                            quantity: newQuantity,
+                            unitPrice: itemPrice,
+                            totalPrice: totalPrice
                         };
 
                         // Set the inline notification
                         setNotification({
                             type: 'success',
-                            message: `Added ${quantity} case(s) of ${currentProduct.name} (${selectedPackage}) to cart. Total: ${newQuantity} case(s).`
+                            message: `Added ${qty} crate(s) of ${currentProduct.name} (${selectedPackage}) to cart. Total: ${newQuantity} crate(s).`
                         });
 
                         // Clear the notification after 4 seconds
@@ -357,12 +477,12 @@
                         };
                     });
                     
-                    setQuantity(0); // Reset quantity after adding
+                    setQuantity(''); // Reset quantity after adding
                 } else {
                     // Set the inline error notification
                     setNotification({
                         type: 'error',
-                        message: 'Please select a product, package, and quantity greater than 0.'
+                        message: 'Please select a product, package, and enter a quantity greater than 0.'
                     });
                     setTimeout(() => setNotification(null), 4000);
                 }
@@ -370,6 +490,15 @@
 
             const getTotalItems = () => {
                 return Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+            };
+
+            const getTotalPrice = () => {
+                return Object.values(cart).reduce((sum, item) => sum + item.totalPrice, 0);
+            };
+
+            // Format price with commas for Malawian Kwacha
+            const formatPrice = (price) => {
+                return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             };
 
             // Navigate to the Cart Review step (Step 5)
@@ -635,11 +764,7 @@
                                 ))}
                             </div>
                             
-
-
-
-
-                        </div>
+                                                    </div>
                     </div>
                 );
             }
@@ -717,6 +842,20 @@
                                                 imgKey={currentProduct.imgKey}
                                             />
                                             <p className="text-sm text-blue-custom mt-2 font-medium">{currentProduct.name}</p>
+                                            
+                                            {/* Display Price Information */}
+                                            {currentProduct.price && (
+                                                <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-sm text-gray-700">Crate Size:</span>
+                                                        <span className="font-bold text-blue-custom">{currentProduct.price.crateSize} units</span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center mt-1">
+                                                        <span className="text-sm text-gray-700">Price per Crate:</span>
+                                                        <span className="font-bold text-green-600 text-lg">{currentProduct.price.price} {currentProduct.price.currency}</span>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                         
                                         {/* Right Column: Package and Quantity Controls */}
@@ -736,26 +875,56 @@
                                                 </select>
                                             </div>
                                             
-                                            {/* Quantity Input */}
+                                            {/* Quantity Input - Removed "cases" and spinners */}
                                             <div>
-                                                <label className="block text-sm font-medium text-blue-custom mb-2">Quantity (Cases)</label>
+                                                <label className="block text-sm font-medium text-blue-custom mb-2">Quantity</label>
                                                 <input
-                                                    type="number"
-                                                    min="0"
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    pattern="[0-9]*"
                                                     value={quantity}
-                                                    onChange={(e) => setQuantity(parseInt(e.target.value) || 0)}
+                                                    onChange={handleQuantityChange}
                                                     className="w-full px-4 py-3 border border-blue-custom rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg text-center"
-                                                    placeholder="0"
+                                                    placeholder="Enter number of crates"
+                                                    onKeyPress={(e) => {
+                                                        // Only allow numbers
+                                                        if (!/[0-9]/.test(e.key)) {
+                                                            e.preventDefault();
+                                                        }
+                                                    }}
                                                 />
+                                                <p className="text-xs text-gray-500 mt-1 text-center">Enter whole numbers only (no decimals)</p>
                                             </div>
+                                            
+                                            {/* Price Calculation Display */}
+                                            {currentProduct.price && quantity && parseInt(quantity) > 0 && (
+                                                <div className="p-3 bg-blue-100 border border-blue-200 rounded-lg">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-sm text-blue-custom">Price Calculation:</span>
+                                                        <span className="font-bold text-blue-custom">
+                                                            {parseInt(quantity)} crate(s) × {currentProduct.price.price} {currentProduct.price.currency}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center mt-2 pt-2 border-t border-blue-300">
+                                                        <span className="text-lg font-bold text-blue-custom">Total:</span>
+                                                        <span className="text-xl font-bold text-green-600">
+                                                            {formatPrice(parseInt(currentProduct.price.price.replace(/,/g, '')) * parseInt(quantity))} {currentProduct.price.currency}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            )}
                                             
                                             {/* Add to Cart Button - RED for cart actions */}
                                             <button
                                                 onClick={handleAddToCart}
-                                                disabled={quantity === 0 || !selectedPackage}
+                                                disabled={!quantity || parseInt(quantity) === 0 || !selectedPackage}
                                                 className="w-full bg-red-custom text-white py-3 rounded-lg font-semibold text-lg hover:bg-red-dark transition disabled:bg-gray-400"
                                             >
-                                                Add {quantity > 0 ? `${quantity} Case(s)` : 'Item'} to Cart
+                                                {quantity && parseInt(quantity) > 0 ? (
+                                                    `Add ${quantity} Crate(s) to Cart`
+                                                ) : (
+                                                    'Add to Cart'
+                                                )}
                                             </button>
                                         </div>
                                     </div>
@@ -778,6 +947,7 @@
             // Step 5: Cart Review
             if (step === 5) {
                 const cartItems = Object.entries(cart);
+                const totalPrice = getTotalPrice();
                 
                 return (
                     <div className="min-h-screen bg-blue-white p-4">
@@ -815,13 +985,16 @@
                                         {/* Cart Items List */}
                                         <ul className="divide-y divide-gray-200">
                                             {cartItems.map(([key, item]) => (
-                                                <li key={key} className="py-3 flex justify-between items-center">
-                                                    <div>
+                                                <li key={key} className="py-4 flex justify-between items-center">
+                                                    <div className="flex-1">
                                                         <p className="font-semibold text-blue-custom">{item.productName}</p>
                                                         <p className="text-sm text-gray-500">{item.packageOption}</p>
                                                     </div>
-                                                    <div className="flex items-center space-x-4">
-                                                        <span className="font-mono font-bold text-lg text-blue-custom">{item.quantity} Cases</span>
+                                                    <div className="flex items-center space-x-6">
+                                                        <div className="text-right">
+                                                            <p className="font-mono font-bold text-lg text-blue-custom">{item.quantity} Crate(s)</p>
+                                                            <p className="text-sm text-green-600 font-semibold">{formatPrice(item.totalPrice)} MWK</p>
+                                                        </div>
                                                         <button 
                                                             onClick={() => handleRemoveItem(key)}
                                                             className="text-red-500 hover:text-red-700 transition p-2 rounded-full hover:bg-red-50"
@@ -836,15 +1009,19 @@
 
                                         {/* Summary and Checkout */}
                                         <div className="pt-4 border-t border-gray-200">
+                                            <div className="flex justify-between items-center mb-2">
+                                                <h3 className="text-lg font-bold text-blue-custom">Total Items:</h3>
+                                                <p className="text-lg font-bold text-blue-custom">{getTotalItems()} crates</p>
+                                            </div>
                                             <div className="flex justify-between items-center mb-4">
-                                                <h3 className="text-xl font-bold text-blue-custom">Total Items:</h3>
-                                                <p className="text-xl font-bold text-blue-custom">{getTotalItems()} cases</p>
+                                                <h3 className="text-lg font-bold text-blue-custom">Total Amount:</h3>
+                                                <p className="text-2xl font-bold text-green-600">{formatPrice(totalPrice)} MWK</p>
                                             </div>
                                             <button
                                                 onClick={handleProceedToPayment}
                                                 className="w-full bg-red-custom text-white py-3 rounded-lg font-semibold text-lg hover:bg-red-dark transition"
                                             >
-                                                Proceed to Payment
+                                                Proceed to Payment ({formatPrice(totalPrice)} MWK)
                                             </button>
                                         </div>
                                     </div>
@@ -857,6 +1034,8 @@
 
             // Step 6: Mobile Money Payment Input
             if (step === 6) {
+                const totalPrice = getTotalPrice();
+                
                 return (
                     <div className="min-h-screen bg-custom-gradient flex items-center justify-center p-4">
                         <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md border border-blue-custom">
@@ -877,6 +1056,7 @@
                             <div className="bg-blue-50 rounded-lg p-4 mb-6 border border-blue-custom">
                                 <h3 className="font-semibold text-blue-custom mb-2">Order Summary</h3>
                                 <p className="text-2xl font-bold text-blue-custom">{getTotalItems()} items</p>
+                                <p className="text-xl font-bold text-green-600 mt-1">{formatPrice(totalPrice)} MWK</p>
                             </div>
                             
                             <div className="space-y-4">
@@ -908,7 +1088,7 @@
                                     onClick={handlePayment}
                                     className="w-full bg-red-custom text-white py-3 rounded-lg font-semibold hover:bg-red-dark transition"
                                 >
-                                    Confirm Payment
+                                    Confirm Payment ({formatPrice(totalPrice)} MWK)
                                 </button>
                             </div>
                         </div>
@@ -931,6 +1111,8 @@
 
             // Step 8: Success
             if (step === 8) {
+                const totalPrice = getTotalPrice();
+                
                 return (
                     <div className="min-h-screen bg-custom-gradient flex items-center justify-center p-4">
                         <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md text-center border border-blue-custom">
@@ -943,6 +1125,7 @@
                             <div className="bg-blue-50 rounded-lg p-4 mb-6 border border-blue-custom">
                                 <p className="text-sm text-blue-custom">Order Details</p>
                                 <p className="text-2xl font-bold text-green-600 mt-1">{getTotalItems()} items</p>
+                                <p className="text-xl font-bold text-green-600">{formatPrice(totalPrice)} MWK</p>
                                 <p className="text-sm text-blue-custom mt-2">Payment via {telecom}</p>
                             </div>
                             
