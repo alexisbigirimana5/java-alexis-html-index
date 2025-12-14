@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eezie - Order App</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom color theme: white mixed with blue */
+        .bg-custom-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #e6f0ff 50%, #cce0ff 100%);
+        }
+        
+        .bg-blue-white {
+            background-color: #f0f7ff;
+        }
+        
+        .text-blue-custom {
+            color: #1e40af;
+        }
+        
+        .border-blue-custom {
+            border-color: #3b82f6;
+        }
+        
+        .bg-red-custom {
+            background-color: #dc2626;
+        }
+        
+        .hover\:bg-red-dark:hover {
+            background-color: #b91c1c;
+        }
+        
+        /* Basic styles for image display */
+        .product-detail-image {
+            width: 100%;
+            max-width: 250px;
+            height: auto;
+            max-height: 350px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin: 0 auto;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .company-logo {
+            width: 100%;
+            max-width: 180px;
+            height: auto;
+            max-height: 120px;
+            object-fit: contain;
+        }
+        
+        /* Custom styles for the Chibuku logo container */
+        .chibuku-logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="bg-blue-white">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useMemo } = React;
+
+        // =======================================================
+        // 1. Lucide Icons as inline SVGs (for a cleaner look)
+        // =======================================================
+        const ShoppingCart = ({className}) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+        );
+
+        const CheckCircle = ({className}) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const Phone = ({className}) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+            </svg>
+        );
+
+        const Package = ({className}) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+        );
+
+        const Lock = ({className}) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+        );
+
+        const User = ({className}) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+        );
+
+        const ArrowRight = ({className}) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+        );
+
+        const Trash = ({ className }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+        );
+        
+        // =======================================================
+        // 2. Image Configuration
+        // =======================================================
+        /*
+        INSTRUCTIONS: Create an "images" folder in the same directory as this HTML file.
+        Place your product images in the "images" folder with these exact names:
+        
+        1. chocolate-maheu.jpg
+        2. shake-shake.jpg  
+        3. chibuku-special.jpg
+        4. super-giant.jpg
+        5. strawberry-maheu.jpg
+        6. vanilla-milk-maheu.jpg
+        7. super-maheu.jpg
+        8. chibuku-logo.png
+        */
+        
+        // Image paths - relative to the HTML file location
+        const imagePaths = {
+            // Logo for Chibuku Breweries
+            'CHIBUKI logo': './images/chibuku-logo.png',
+            
+            // Product images
+            'Chibuku Chocolate Maheu': './images/chocolate-maheu.jpg',
+            'Chibuku Shake Shake Carton': './images/shake-shake.jpg',
+            'Chibuku Special': './images/chibuku-special.jpg',
+            'Chibuku Super Giant': './images/super-giant.jpg',
+            'Chibuku strawberry maheu': './images/strawberry-maheu.jpg',
+            'Chibuku Vanilla and Milk Maheu': './images/vanilla-milk-maheu.jpg',
+            'Chibuku Super Maheu, milk and chocolate': './images/super-maheu.jpg',
+        };
+        
+        // Fallback images (Unsplash) in case local images aren't found
+        const fallbackImages = {
+            'CHIBUKI logo': 'https://images.unsplash.com/photo-1567446537710-0e9b8d4d8c4d?w=400&h=200&fit=crop&crop=center',
+            
+            'Chibuku Chocolate Maheu': 'https://images.unsplash.com/photo-1570913199992-91d07c140e7a?w=400&h=400&fit=crop&crop=center',
+            'Chibuku Shake Shake Carton': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop&crop=center',
+            'Chibuku Special': 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400&h=400&fit=crop&crop=center',
+            'Chibuku Super Giant': 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=400&h=400&fit=crop&crop=center',
+            'Chibuku strawberry maheu': 'https://images.unsplash.com/photo-1586201375761-83865001e311?w=400&h=400&fit=crop&crop=center',
+            'Chibuku Vanilla and Milk Maheu': 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=400&fit=crop&crop=center',
+            'Chibuku Super Maheu, milk and chocolate': 'https://images.unsplash.com/photo-1570913199992-91d07c140e7a?w=400&h=400&fit=crop&crop=center',
+        };
+
+        const BrawleyApp = () => {
+            const [step, setStep] = useState(1);
+            const [userId, setUserId] = useState('');
+            const [password, setPassword] = useState('');
+            const [newPassword, setNewPassword] = useState('');
+            const [confirmPassword, setConfirmPassword] = useState('');
+            const [cart, setCart] = useState({});
+            const [phoneNumber, setPhoneNumber] = useState('');
+            const [telecom, setTelecom] = useState('MTN');
+            const [selectedCompany, setSelectedCompany] = useState(null);
+            
+            // State for the dynamically changed password
+            const [simulatedPassword, setSimulatedPassword] = useState('demo123');
+            // MODIFIED: Username changed from 'Pk' to 'eezie'
+            const INITIAL_USER = 'eezie'; 
+            
+            // State for the product selection in Step 4
+            const [selectedProductId, setSelectedProductId] = useState('');
+            // State for the package selection in Step 4
+            const [selectedPackage, setSelectedPackage] = useState('');
+            // State for quantity
+            const [quantity, setQuantity] = useState(0);
+            // State for the inline notification
+            const [notification, setNotification] = useState(null);
+            // State for image loading errors
+            const [imageErrors, setImageErrors] = useState({});
+
+            const handleGoBack = () => {
+                if (step === 3) {
+                    setStep(1); // Back to login/password check
+                } else if (step === 4) {
+                    setStep(3);
+                    // Clear product/cart selection when going back to company
+                    setCart({});
+                    setSelectedProductId('');
+                    setSelectedPackage('');
+                    setQuantity(0);
+                } else if (step === 5) {
+                    // Step 5 is the cart review
+                    setStep(4);
+                } else if (step === 6) {
+                    setStep(5);
+                }
+            };
+
+            // 🌟 LOGOUT FUNCTIONALITY 🌟
+            const handleLogout = () => {
+                setStep(1); // Redirects user to the login page
+                setUserId(''); // Clears input fields
+                setPassword(''); // Clears input fields
+                setCart({});
+                setSelectedCompany(null);
+                setPhoneNumber('');
+                setNewPassword('');
+                setConfirmPassword('');
+                setSelectedProductId('');
+                setSelectedPackage('');
+                setQuantity(0);
+                setNotification(null);
+                setImageErrors({});
+                alert('You have successfully logged out. Please re-login with your current credentials.');
+            };
+
+            // MODIFIED: Only Chibuku Breweries remains
+            const companies = [
+                {
+                    id: 1,
+                    name: 'Chibuku Breweries',
+                    logo: imagePaths['CHIBUKI logo'], // Using local image path
+                    fallbackLogo: fallbackImages['CHIBUKI logo'],
+                    description: 'Premium beverage products',
+                    bgColor: 'from-blue-800 to-blue-600',
+                    isImage: true
+                },
+            ];
+            
+            // Product List with local image paths
+            const chibukuProducts = [
+                { id: '1', name: 'Chibuku Chocolate Maheu', imgKey: 'Chibuku Chocolate Maheu', packageOptions: ['250ml Carton (Case of 24)', '500ml Carton (Case of 12)'] },
+                { id: '2', name: 'Chibuku Vanilla and Milk Maheu', imgKey: 'Chibuku Vanilla and Milk Maheu', packageOptions: ['250ml Carton (Case of 24)', '500ml Carton (Case of 12)'] },
+                { id: '3', name: 'Chibuku strawberry maheu', imgKey: 'Chibuku strawberry maheu', packageOptions: ['250ml Carton (Case of 24)', '500ml Carton (Case of 12)'] },
+                { id: '4', name: 'Chibuku Super Maheu, milk and chocolate', imgKey: 'Chibuku Super Maheu, milk and chocolate', packageOptions: ['1L Bottle (Case of 6)', '250ml Carton (Case of 24)'] },
+                { id: '5', name: 'Chibuku Super Giant', imgKey: 'Chibuku Super Giant', packageOptions: ['2L Plastic Bottle (Crate of 6)', '1L Plastic Bottle (Crate of 12)'] },
+                { id: '6', name: 'Chibuku Special', imgKey: 'Chibuku Special', packageOptions: ['500ml Glass Bottle (Crate of 24)'] },
+                { id: '7', name: 'Chibuku Shake Shake Carton', imgKey: 'Chibuku Shake Shake Carton', packageOptions: ['1L Carton (Case of 12)'] },
+            ];
+            
+            const products = useMemo(() => {
+                return chibukuProducts.map(p => ({
+                    ...p,
+                    imgSrc: imagePaths[p.imgKey], // Map to local image path
+                    fallbackImgSrc: fallbackImages[p.imgKey], // Fallback image
+                }));
+            }, []);
+
+            // Get the details of the currently selected product
+            const currentProduct = products.find(p => p.id === selectedProductId);
+
+            const handleImageError = (imgKey) => {
+                console.log(`Image failed to load: ${imgKey}`);
+                setImageErrors(prev => ({ ...prev, [imgKey]: true }));
+            };
+
+            const getImageSource = (imgKey, localSrc, fallbackSrc) => {
+                if (imageErrors[imgKey]) {
+                    return fallbackSrc;
+                }
+                return localSrc;
+            };
+
+            const handleProductChange = (e) => {
+                const productId = e.target.value;
+                setSelectedProductId(productId);
+                
+                // Reset package, quantity, and notification when product changes
+                setQuantity(0);
+                setNotification(null);
+                
+                // Automatically select the first package option of the new product
+                const product = products.find(p => p.id === productId);
+                if (product && product.packageOptions.length > 0) {
+                    setSelectedPackage(product.packageOptions[0]);
+                } else {
+                    setSelectedPackage('');
+                }
+            };
+            
+            const handlePackageChange = (e) => {
+                setSelectedPackage(e.target.value);
+                setQuantity(0); // Reset quantity upon package change
+                setNotification(null);
+            };
+
+            const handleLogin = () => {
+                // MODIFIED: Check against new INITIAL_USER 'eezie'
+                if (userId.toLowerCase() === INITIAL_USER && password === simulatedPassword) {
+                    if (simulatedPassword === 'demo123') {
+                        setStep(2); // Go to password change
+                    } else {
+                        setStep(3); // Go to company selection
+                    }
+                } else {
+                    alert(`Invalid credentials! Use ID: ${INITIAL_USER}, Password: ${simulatedPassword} (or demo123 if first login)`);
+                }
+            };
+
+            const handlePasswordChange = () => {
+                if (newPassword && newPassword === confirmPassword && newPassword.length >= 6) {
+                    setSimulatedPassword(newPassword); // Update the password for next login
+                    setStep(3);
+                } else {
+                    alert('Passwords must match and be at least 6 characters!');
+                }
+            };
+
+            const handleCompanySelect = (company) => {
+                setSelectedCompany(company);
+                setStep(4);
+            };
+
+            // Cart key: 'productID-packageOptionName'
+            const handleAddToCart = () => {
+                if (quantity > 0 && selectedProductId && selectedPackage) {
+                    const cartKey = `${selectedProductId}-${selectedPackage.replace(/\s/g, '-')}`;
+                    
+                    setCart(prevCart => {
+                        const existingItem = prevCart[cartKey];
+                        const newQuantity = existingItem ? existingItem.quantity + quantity : quantity;
+                        
+                        // New item object for the cart
+                        const newItem = { 
+                            productId: selectedProductId, 
+                            productName: currentProduct.name,
+                            packageOption: selectedPackage, 
+                            quantity: newQuantity 
+                        };
+
+                        // Set the inline notification
+                        setNotification({
+                            type: 'success',
+                            message: `Added ${quantity} case(s) of ${currentProduct.name} (${selectedPackage}) to cart. Total: ${newQuantity} case(s).`
+                        });
+
+                        // Clear the notification after 4 seconds
+                        setTimeout(() => setNotification(null), 4000);
+                        
+                        return {
+                            ...prevCart, 
+                            [cartKey]: newItem
+                        };
+                    });
+                    
+                    setQuantity(0); // Reset quantity after adding
+                } else {
+                    // Set the inline error notification
+                    setNotification({
+                        type: 'error',
+                        message: 'Please select a product, package, and quantity greater than 0.'
+                    });
+                    setTimeout(() => setNotification(null), 4000);
+                }
+            };
+
+            const getTotalItems = () => {
+                return Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+            };
+
+            // Navigate to the Cart Review step (Step 5)
+            const handleGoToCartReview = () => {
+                if (getTotalItems() > 0) {
+                    setStep(5);
+                } else {
+                    setNotification({
+                        type: 'error',
+                        message: 'Your cart is empty. Please add items before proceeding.'
+                    });
+                    setTimeout(() => setNotification(null), 4000);
+                }
+            };
+
+            // Navigate from Cart Review to Payment (Step 6)
+            const handleProceedToPayment = () => {
+                setStep(6);
+            };
+
+            const handlePayment = () => {
+                if (phoneNumber && phoneNumber.length >= 10) {
+                    setStep(7); // Processing step
+                    // Simulate payment confirmation delay
+                    setTimeout(() => setStep(8), 2000); // Final success step
+                } else {
+                    alert('Please enter a valid phone number!');
+                }
+            };
+            
+            // Function to remove an item from the cart
+            const handleRemoveItem = (cartKey) => {
+                setCart(prevCart => {
+                    const newCart = { ...prevCart };
+                    delete newCart[cartKey];
+                    return newCart;
+                });
+                setNotification({
+                    type: 'info',
+                    message: 'Item removed from cart.'
+                });
+                setTimeout(() => setNotification(null), 3000);
+            };
+
+            // Inline Notification Component
+            const Notification = ({ message, type }) => {
+                if (!message) return null;
+                
+                let bgColor = 'bg-green-100 border-green-400 text-green-700';
+                let icon = <CheckCircle className="w-5 h-5" />;
+
+                if (type === 'error') {
+                    bgColor = 'bg-red-100 border-red-400 text-red-700';
+                    icon = (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    );
+                } else if (type === 'info') {
+                    bgColor = 'bg-blue-100 border-blue-400 text-blue-700';
+                    icon = (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    );
+                }
+
+                return (
+                    <div className={`p-4 border-l-4 ${bgColor} rounded-md mb-4 flex items-center shadow-md`} role="alert">
+                        <div className="flex-shrink-0 mr-3">
+                            {icon}
+                        </div>
+                        <div className="text-sm font-medium">{message}</div>
+                    </div>
+                );
+            };
+
+            // Image Component with better error handling
+            const ProductImage = ({ src, fallbackSrc, alt, className, imgKey }) => {
+                const [hasError, setHasError] = useState(false);
+                
+                return (
+                    <img 
+                        src={hasError ? fallbackSrc : src}
+                        alt={alt}
+                        className={className}
+                        onError={() => {
+                            console.log(`Failed to load image: ${src}`);
+                            setHasError(true);
+                            handleImageError(imgKey);
+                        }}
+                        onLoad={() => console.log(`Successfully loaded image: ${src}`)}
+                    />
+                );
+            };
+
+            
+            // =======================================================
+            // Main App Steps
+            // =======================================================
+
+            // Step 1: Login
+            if (step === 1) {
+                return (
+                    <div className="min-h-screen bg-custom-gradient flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md border border-blue-custom">
+                            <div className="text-center mb-8">
+                                <div className="bg-blue-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Package className="w-10 h-10 text-blue-600" />
+                                </div>
+                                <h1 className="text-3xl font-bold text-blue-custom">Eezie</h1>
+                                <p className="text-gray-600 mt-2">Welcome! Please login to continue</p>
+                            </div>
+                            
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">User ID</label>
+                                    <div className="relative">
+                                        <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                                        <input
+                                            type="text"
+                                            value={userId}
+                                            onChange={(e) => setUserId(e.target.value)}
+                                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            placeholder="Enter User ID"
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                                    <div className="relative">
+                                        <Lock className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                                        <input
+                                            type="password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            placeholder="Enter Password"
+                                        />
+                                    </div>
+                                </div>
+                                
+                                <button
+                                    onClick={handleLogin}
+                                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                                >
+                                    Login
+                                </button>
+                                
+                                <div className="text-center text-sm text-gray-500 mt-4">
+                                    <p>Demo Credentials:</p>
+                                    <p>ID: <span className="font-mono font-semibold text-blue-custom">{INITIAL_USER}</span></p>
+                                    <p>Password: <span className="font-mono font-semibold text-blue-custom">{simulatedPassword}</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Step 2: Change Password
+            if (step === 2) {
+                return (
+                    <div className="min-h-screen bg-custom-gradient flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md border border-blue-custom">
+                            <div className="text-center mb-8">
+                                <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Lock className="w-8 h-8 text-blue-600" />
+                                </div>
+                                <h2 className="text-2xl font-bold text-blue-custom">Change Password</h2>
+                                <p className="text-gray-600 mt-2">Please set a new password</p>
+                            </div>
+                            
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                                    <input
+                                        type="password"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="Enter new password"
+                                    />
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                                    <input
+                                        type="password"
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="Confirm new password"
+                                    />
+                                </div>
+                                
+                                <button
+                                    onClick={handlePasswordChange}
+                                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                                >
+                                    Continue
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Step 3: Select Company
+            if (step === 3) {
+                return (
+                    <div className="min-h-screen bg-blue-white p-4">
+                        <div className="max-w-4xl mx-auto">
+                            <div className="flex justify-between items-center mb-8">
+                                <button
+                                    onClick={() => setStep(1)} // Go back to login/password check
+                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+                                >
+                                    ← Back to Login
+                                </button>
+                                <div className="text-center flex-1">
+                                    <h2 className="text-3xl font-bold text-blue-custom">Select a Company</h2>
+                                    <p className="text-gray-600 mt-2">Choose a selling company to browse products</p>
+                                </div>
+                                {/* 🌟 LOGOUT BUTTON 🌟 */}
+                                <button
+                                    onClick={handleLogout}
+                                    className="bg-red-custom text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-dark transition flex items-center"
+                                >
+                                    <User className="w-5 h-5 mr-2" /> Logout
+                                </button>
+                            </div>
+
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {/* MODIFIED: Only one company option */}
+                                {companies.map((company) => (
+                                    <div
+                                        key={company.id}
+                                        className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition cursor-pointer md:col-span-2 border border-blue-custom"
+                                        onClick={() => handleCompanySelect(company)}
+                                    >
+                                        <div className={`bg-gradient-to-r ${company.bgColor} h-40 flex items-center justify-center p-4`}>
+                                            <div className="text-white text-center chibuku-logo-container">
+                                                {/* Use the ProductImage component for better error handling */}
+                                                <ProductImage 
+                                                    src={company.logo}
+                                                    fallbackSrc={company.fallbackLogo}
+                                                    alt={`${company.name} Logo`}
+                                                    className="company-logo"
+                                                    imgKey={company.name}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="p-6">
+                                            <h3 className="text-xl font-bold text-blue-custom mb-2">{company.name}</h3>
+                                            <p className="text-gray-600 mb-4">{company.description}</p>
+                                            <div className="flex items-center text-blue-600 font-semibold hover:text-blue-700">
+                                                View Products <ArrowRight className="w-4 h-4 ml-2" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            
+
+
+
+
+                        </div>
+                    </div>
+                );
+            }
+
+            // Step 4: Product Ordering
+            if (step === 4) {
+                return (
+                    <div className="min-h-screen bg-blue-white p-4">
+                        <div className="max-w-6xl mx-auto">
+                            {/* Header, Back Button, and LOGOUT Button */}
+                            <div className="flex justify-between items-center mb-6">
+                                <button
+                                    onClick={handleGoBack}
+                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+                                >
+                                    ← Back to Companies
+                                </button>
+                                {/* 🌟 LOGOUT BUTTON 🌟 */}
+                                <button
+                                    onClick={handleLogout}
+                                    className="bg-red-custom text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-dark transition flex items-center"
+                                >
+                                    <User className="w-5 h-5 mr-2" /> Logout
+                                </button>
+                            </div>
+
+                            <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-blue-custom">
+                                <div className="flex justify-between items-center border-b pb-4 mb-4">
+                                    <div>
+                                        <h2 className="text-3xl font-bold text-blue-custom">{selectedCompany.name} Products</h2>
+                                        <p className="text-gray-600 mt-1">Select the item and quantity to add to your order.</p>
+                                    </div>
+                                    <button 
+                                        onClick={handleGoToCartReview} 
+                                        className="flex items-center gap-2 bg-red-custom text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-dark transition"
+                                    >
+                                        <ShoppingCart className="w-5 h-5" />
+                                        Cart ({getTotalItems()})
+                                    </button>
+                                </div>
+                                
+                                {/* Inline Notification Area */}
+                                <Notification message={notification?.message} type={notification?.type} />
+
+                                {/* 1. Product Selection Dropdown */}
+                                <div className="mb-6">
+                                    <label htmlFor="product-select" className="block text-lg font-semibold text-blue-custom mb-2">
+                                        Choose a Product
+                                    </label>
+                                    <select
+                                        id="product-select"
+                                        value={selectedProductId}
+                                        onChange={handleProductChange}
+                                        className="w-full px-4 py-3 border border-blue-custom rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-gray-700 text-lg"
+                                    >
+                                        <option value="" disabled>-- Select a product --</option>
+                                        {products.map((product) => (
+                                            <option key={product.id} value={product.id}>
+                                                {product.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                                
+                                {/* 2. Product Details and Add to Cart Section (Visible only when a product is selected) */}
+                                {currentProduct && (
+                                    <div className="border border-blue-custom rounded-xl p-6 bg-blue-50 grid md:grid-cols-2 gap-6 items-center">
+                                        {/* Left Column: Image Display */}
+                                        <div className="text-center">
+                                            <ProductImage 
+                                                src={currentProduct.imgSrc}
+                                                fallbackSrc={currentProduct.fallbackImgSrc}
+                                                alt={currentProduct.name}
+                                                className="product-detail-image"
+                                                imgKey={currentProduct.imgKey}
+                                            />
+                                            <p className="text-sm text-blue-custom mt-2 font-medium">{currentProduct.name}</p>
+                                        </div>
+                                        
+                                        {/* Right Column: Package and Quantity Controls */}
+                                        <div className="space-y-4">
+                                            
+                                            {/* Package Dropdown */}
+                                            <div>
+                                                <label className="block text-sm font-medium text-blue-custom mb-2">Select Package/Case Size</label>
+                                                <select
+                                                    value={selectedPackage}
+                                                    onChange={handlePackageChange}
+                                                    className="w-full px-4 py-3 border border-blue-custom rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                >
+                                                    {currentProduct.packageOptions.map((option) => (
+                                                        <option key={option} value={option}>{option}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            
+                                            {/* Quantity Input */}
+                                            <div>
+                                                <label className="block text-sm font-medium text-blue-custom mb-2">Quantity (Cases)</label>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    value={quantity}
+                                                    onChange={(e) => setQuantity(parseInt(e.target.value) || 0)}
+                                                    className="w-full px-4 py-3 border border-blue-custom rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg text-center"
+                                                    placeholder="0"
+                                                />
+                                            </div>
+                                            
+                                            {/* Add to Cart Button - RED for cart actions */}
+                                            <button
+                                                onClick={handleAddToCart}
+                                                disabled={quantity === 0 || !selectedPackage}
+                                                className="w-full bg-red-custom text-white py-3 rounded-lg font-semibold text-lg hover:bg-red-dark transition disabled:bg-gray-400"
+                                            >
+                                                Add {quantity > 0 ? `${quantity} Case(s)` : 'Item'} to Cart
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {/* Image Loading Status */}
+                                {currentProduct && imageErrors[currentProduct.imgKey] && (
+                                    <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                        <p className="text-sm text-yellow-700">
+                                            Using fallback image for "{currentProduct.name}". Make sure the image file exists at: <code className="bg-yellow-100 px-1">{currentProduct.imgSrc}</code>
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Step 5: Cart Review
+            if (step === 5) {
+                const cartItems = Object.entries(cart);
+                
+                return (
+                    <div className="min-h-screen bg-blue-white p-4">
+                        <div className="max-w-4xl mx-auto">
+                            <div className="flex justify-between items-center mb-6">
+                                <button
+                                    onClick={handleGoBack}
+                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+                                >
+                                    ← Back to Ordering
+                                </button>
+                                {/* 🌟 LOGOUT BUTTON 🌟 */}
+                                <button
+                                    onClick={handleLogout}
+                                    className="bg-red-custom text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-dark transition flex items-center"
+                                >
+                                    <User className="w-5 h-5 mr-2" /> Logout
+                                </button>
+                            </div>
+
+                            <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-blue-custom">
+                                <h2 className="text-3xl font-bold text-blue-custom mb-4 border-b pb-3">Your Order Cart</h2>
+                                <Notification message={notification?.message} type={notification?.type} />
+
+                                {getTotalItems() === 0 ? (
+                                    <div className="text-center py-10 text-gray-500">
+                                        <ShoppingCart className="w-12 h-12 mx-auto mb-4" />
+                                        <p className="text-xl">Your cart is empty.</p>
+                                        <button onClick={() => setStep(4)} className="mt-4 text-blue-custom font-semibold hover:text-blue-700">
+                                            Go to Products
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4">
+                                        {/* Cart Items List */}
+                                        <ul className="divide-y divide-gray-200">
+                                            {cartItems.map(([key, item]) => (
+                                                <li key={key} className="py-3 flex justify-between items-center">
+                                                    <div>
+                                                        <p className="font-semibold text-blue-custom">{item.productName}</p>
+                                                        <p className="text-sm text-gray-500">{item.packageOption}</p>
+                                                    </div>
+                                                    <div className="flex items-center space-x-4">
+                                                        <span className="font-mono font-bold text-lg text-blue-custom">{item.quantity} Cases</span>
+                                                        <button 
+                                                            onClick={() => handleRemoveItem(key)}
+                                                            className="text-red-500 hover:text-red-700 transition p-2 rounded-full hover:bg-red-50"
+                                                            title="Remove item"
+                                                        >
+                                                            <Trash className="w-5 h-5" />
+                                                        </button>
+                                                    </div>
+                                                </li>
+                                            ))}
+                                        </ul>
+
+                                        {/* Summary and Checkout */}
+                                        <div className="pt-4 border-t border-gray-200">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <h3 className="text-xl font-bold text-blue-custom">Total Items:</h3>
+                                                <p className="text-xl font-bold text-blue-custom">{getTotalItems()} cases</p>
+                                            </div>
+                                            <button
+                                                onClick={handleProceedToPayment}
+                                                className="w-full bg-red-custom text-white py-3 rounded-lg font-semibold text-lg hover:bg-red-dark transition"
+                                            >
+                                                Proceed to Payment
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Step 6: Mobile Money Payment Input
+            if (step === 6) {
+                return (
+                    <div className="min-h-screen bg-custom-gradient flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md border border-blue-custom">
+                            <button
+                                onClick={handleGoBack}
+                                className="mb-6 bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+                            >
+                                ← Back to Cart
+                            </button>
+                            <div className="text-center mb-8">
+                                <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Phone className="w-8 h-8 text-purple-600" />
+                                </div>
+                                <h2 className="text-2xl font-bold text-blue-custom">Mobile Money Payment</h2>
+                                <p className="text-gray-600 mt-2">Enter your details to complete your order</p>
+                            </div>
+                            
+                            <div className="bg-blue-50 rounded-lg p-4 mb-6 border border-blue-custom">
+                                <h3 className="font-semibold text-blue-custom mb-2">Order Summary</h3>
+                                <p className="text-2xl font-bold text-blue-custom">{getTotalItems()} items</p>
+                            </div>
+                            
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-blue-custom mb-2">Select Telecom</label>
+                                    <select
+                                        value={telecom}
+                                        onChange={(e) => setTelecom(e.target.value)}
+                                        className="w-full px-4 py-3 border border-blue-custom rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    >
+                                        <option value="MTN">MTN Mobile Money</option>
+                                        <option value="Airtel">Airtel Money</option>
+                                        <option value="Tigo">Tigo Cash</option>
+                                    </select>
+                                </div>
+                                
+                                <div>
+                                    <label className="block text-sm font-medium text-blue-custom mb-2">Phone Number</label>
+                                    <input
+                                        type="tel"
+                                        value={phoneNumber}
+                                        onChange={(e) => setPhoneNumber(e.target.value)}
+                                        className="w-full px-4 py-3 border border-blue-custom rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                        placeholder="Enter phone number"
+                                    />
+                                </div>
+                                
+                                <button
+                                    onClick={handlePayment}
+                                    className="w-full bg-red-custom text-white py-3 rounded-lg font-semibold hover:bg-red-dark transition"
+                                >
+                                    Confirm Payment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Step 7: Processing Payment
+            if (step === 7) {
+                return (
+                    <div className="min-h-screen bg-custom-gradient flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center border border-blue-custom">
+                            <div className="animate-spin w-16 h-16 border-4 border-blue-custom border-t-transparent rounded-full mx-auto mb-6"></div>
+                            <h2 className="text-2xl font-bold text-blue-custom mb-2">Processing Payment...</h2>
+                            <p className="text-gray-600">Please wait while we confirm your payment</p>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Step 8: Success
+            if (step === 8) {
+                return (
+                    <div className="min-h-screen bg-custom-gradient flex items-center justify-center p-4">
+                        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md text-center border border-blue-custom">
+                            <div className="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <CheckCircle className="w-12 h-12 text-green-600" />
+                            </div>
+                            <h2 className="text-3xl font-bold text-blue-custom mb-2">Payment Successful!</h2>
+                            <p className="text-gray-600 mb-6">Your order has been confirmed</p>
+                            
+                            <div className="bg-blue-50 rounded-lg p-4 mb-6 border border-blue-custom">
+                                <p className="text-sm text-blue-custom">Order Details</p>
+                                <p className="text-2xl font-bold text-green-600 mt-1">{getTotalItems()} items</p>
+                                <p className="text-sm text-blue-custom mt-2">Payment via {telecom}</p>
+                            </div>
+                            
+                            {/* Option to start a new order or logout */}
+                            <button
+                                onClick={handleLogout}
+                                className="w-full bg-red-custom text-white py-3 rounded-lg font-semibold hover:bg-red-dark transition"
+                            >
+                                Finish & Logout
+                            </button>
+                            <button
+                                onClick={() => { setStep(3); setCart({}); }}
+                                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition mt-3"
+                            >
+                                New Order
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
+        };
+
+        // Render the main component
+        ReactDOM.render(<BrawleyApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
