@@ -806,7 +806,7 @@
             );
         };
 
-        const SalesDashboard = () => {
+        const SalesDashboard = ({ setStep, handleLogout }) => {
             const [timeRange, setTimeRange] = useState('monthly');
             const [salesData, setSalesData] = useState(generateDummySalesData());
             const [isRefreshing, setIsRefreshing] = useState(false);
@@ -832,18 +832,27 @@
             return (
                 <div className="min-h-screen bg-blue-white p-4">
                     <div className="max-w-7xl mx-auto">
-                        {/* Header */}
+                        {/* Header - UPDATED: Added Back to Company Products and Logout buttons */}
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                             <div>
                                 <h1 className="text-3xl font-bold text-blue-custom">Sales Analytics Dashboard</h1>
                                 <p className="text-gray-600 mt-2">Chibuku Breweries Performance Insights</p>
                             </div>
                             <div className="flex flex-wrap gap-3">
+                                {/* CHANGED: Replaced "Back to Main" with "Back to Company Products" */}
                                 <button
                                     onClick={() => setStep(3)}
                                     className="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center"
                                 >
-                                    ← Back to Main
+                                    ← Back to Company Products
+                                </button>
+                                {/* ADDED: Logout button */}
+                                <button
+                                    onClick={handleLogout}
+                                    className="bg-red-custom text-white px-4 py-2 rounded-lg font-semibold hover:bg-red-dark transition flex items-center"
+                                >
+                                    <User className="w-4 h-4 mr-2" />
+                                    Logout
                                 </button>
                                 <button
                                     onClick={handleRefresh}
@@ -2016,7 +2025,7 @@
 
             // Step 9: Sales Analytics Dashboard
             if (step === 9) {
-                return <SalesDashboard />;
+                return <SalesDashboard setStep={setStep} handleLogout={handleLogout} />;
             }
         };
 
@@ -2025,3 +2034,4 @@
     </script>
 </body>
 </html>
+[file content end]
